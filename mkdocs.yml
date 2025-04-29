@@ -1,0 +1,14 @@
+site_name: BCI Plugins
+
+theme:
+  name: readthedocs
+
+markdown_extensions:
+  - toc:
+      baselevel: 1
+
+plugins:
+  - search
+
+nav:
+  - Home: index.md
