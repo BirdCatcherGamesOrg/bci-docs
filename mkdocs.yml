@@ -1,4 +1,4 @@
-site_name: BCI Plugins
+site_name: The BCI Project
 
 theme:
   name: readthedocs
@@ -11,4 +11,7 @@ plugins:
   - search
 
 nav:
-  - Home: index.md
+  - Home:
+    - index.md
+    - Libraries:
+        - bci-ue-logger-lib/docs/index.md
