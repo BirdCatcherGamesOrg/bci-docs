@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>BCI UE Logger Lib - The BCI Project</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "BCI UE Logger Lib";
+        var mkdocs_page_input_path = "bci-ue-logger-lib\\docs\\index.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> The BCI Project
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Home</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../..">BCI Project</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" >Libraries</a>
+    <ul class="current">
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">BCI UE Logger Lib</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#bcilog">BCILOG</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#bcilog_var">BCILOG_VAR</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#optional-structured-logging-with-spdlog">Optional: Structured Logging with spdlog</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#onboarding">Onboarding</a>
+    </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">The BCI Project</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Home</li>
+          <li class="breadcrumb-item">Libraries</li>
+      <li class="breadcrumb-item active">BCI UE Logger Lib</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="bci-ue-logger-lib">BCI UE Logger Lib</h1>
+<p>This library provides macros for additional logging features to UE_LOG and UE_LOGFMT.</p>
+<ul>
+<li>Logging with Context</li>
+<li>Include <code>__FILE__</code> and <code>__LINE__</code> by default</li>
+<li>Optional Structured Logging</li>
+</ul>
+<p>After processing the logging values, the library forwards the results to a customizable log macro destination configured with the <code>BCICORELOG_FORWARD_TO</code> directive. Typically, this direct evaluates to <code>UE_LOG</code>. However by leaving this customizable, developers can chain together custom logging macros in case they've written any.</p>
+<h2 id="bcilog">BCILOG</h2>
+<p>This macro is intended to be the one most commonly used. It follows a similar structure as UE_LOG, except that instead of taking a format string with specifiers, it takes key/value pairs as an optional context payload. </p>
+<pre><code>BCILOG(LOGCATEGORY, VERBOSITY, MESSAGE, CONTEXT);
+</code></pre>
+<p>For example, this is a valid BCILOG</p>
+<pre><code>FString ExampleContextValue = &quot;Value&quot;;
+BCILOG(LogTemp, Log, &quot;Hello, world!&quot;, { &quot;exampleContextKey&quot;, ExampleContextValue }, { &quot;numbersAreSupported&quot;, 12345 });
+</code></pre>
+<p>Outputs:</p>
+<pre><code>[2025.04.29-23.36.00:177][658]LogTemp: [BCILOG] H:\BCITestProject\Plugins\BCI\BCICore\Source\BCICoreEditor\BCICoreEditor.cpp:[28]: Hello, world! - Context: { &quot;exampleContextKey&quot;: &quot;Value&quot;, &quot;numbersAreSupported&quot;: &quot;12345&quot; }
+</code></pre>
+<p>Context values are formatted into JSON objects to make it easy to parse or transform programmatically.</p>
+<h2 id="bcilog_var">BCILOG_VAR</h2>
+<p>This macro is a special case and should be used sparingly. It supports discovering the verbosity from the current level of the category. This is meant to be used in the rare circumstance that the desired verbosity of the message is unknown until runtime. The intended use case is to call BCILOG from an arbitrary blueprint graph.</p>
+<pre><code>void UBCICoreLogLibrary::Log(const UObject* WorldContextObject, const FString&amp; InFunction, const FString&amp; InString)
+{
+    BCILOG_VAR(LogBlueprintUserMessages, InString, {&quot;inFunction&quot;, InFunction});
+}
+</code></pre>
+<h2 id="optional-structured-logging-with-spdlog">Optional: Structured Logging with spdlog</h2>
+<p>The game can consume spdlog as a ThirdParty plugin and set the preprocessor directive <code>WITH_SPDLOG</code> to true in order to support daily rotating structured logging. An OutputDevice will be created that hooks into <code>GLog</code> and forwards everything to <code>spdlog</code>. This means that not only with BCILOG statements appear in the regular UE_LOG outputs, all logging will be captured at least partially in spdlog files.</p>
+<p>For example, the log line above would appear in <code>spdlog_2025-04-29.txt</code> as</p>
+<pre><code>{&quot;timestamp&quot;:&quot;2025-04-29T15:34:20.582Z&quot;,&quot;level&quot;:&quot;info&quot;,&quot;logCategory&quot;:&quot;LogTextureFormatOodle&quot;,&quot;verbosity&quot;:&quot;Display&quot;,&quot;function&quot;:{&quot;name&quot;:&quot;&quot;,&quot;line&quot;:0},&quot;message&quot;:&quot;Oodle Texture loading DLL: oo2tex_win64_2.9.11.dll&quot;,&quot;context&quot;:{}}
+{&quot;timestamp&quot;:&quot;2025-04-29T15:34:20.379Z&quot;,&quot;level&quot;:&quot;info&quot;,&quot;logCategory&quot;:&quot;LogTemp&quot;,&quot;verbosity&quot;:&quot;Log&quot;,&quot;function&quot;:{&quot;name&quot;:&quot;H:\BCITestProject\Plugins\BCI\BCICore\Source\BCICoreEditor\BCICoreEditor&quot;,&quot;line&quot;:29},&quot;message&quot;:&quot;Hello, world!&quot;,&quot;context&quot;:{&quot;exampleContextKey&quot;: &quot;Value&quot;, &quot;numbersAreSupported&quot;: &quot;12345&quot;}}
+{&quot;timestamp&quot;:&quot;2025-04-29T15:34:20.613Z&quot;,&quot;level&quot;:&quot;info&quot;,&quot;logCategory&quot;:&quot;LogChaosDD&quot;,&quot;verbosity&quot;:&quot;Log&quot;,&quot;function&quot;:{&quot;name&quot;:&quot;&quot;,&quot;line&quot;:0},&quot;message&quot;:&quot;Creating Chaos Debug Draw Scene for world Untitled&quot;,&quot;context&quot;:{}}
+</code></pre>
+<p>This provides a completely structured logging stream where every line is consumable as a JSON object. Additionally, the rotating logger collects logs across all play sessions in a game instead of a single file for each session.</p>
+<h2 id="onboarding">Onboarding</h2>
+<p>To onboard with the logging library, developers can incorporate the BCICore plugin into their projects: https://github.com/BirdCatcherGamesOrg/bci-ue-core-plugin</p>
+<p>Alternatively, because the overhead of providing an entire Plugin just for a logging library is high, instead it can be consumed and placed into any module owned by the game team. To integrate the module, set the following values in the Build.cs file</p>
+<pre><code>if (Target.OptionalPlugins.Contains(&quot;spdlog&quot;))
+{
+    bEnableExceptions = true;
+    PublicIncludePaths.Add(spdlog.IncludePath(Path.Combine(PluginDirectory, &quot;../../ThirdParty&quot;)));
+    PublicDefinitions.Add(&quot;WITH_SPDLOG&quot;);
+    PublicDependencyModuleNames.Add(&quot;spdlog&quot;);
+}
+
+PublicDefinitions.Add(&quot;INNER_LOGGING_CATEGORY=&quot; + INNER_LOGGING_CATEGORY_MACRO);
+PublicDefinitions.Add(&quot;BCICORELOG_FORWARD_TO=&quot; + LOG_FORWARD_MACRO);
+PublicDefinitions.Add(&quot;DLLEXPORT_API=&quot; + LOGGING_DLLEXPORT_MACRO);
+</code></pre>
+<pre><code>public static string INNER_LOGGING_CATEGORY_MACRO = &quot;LogBCICore&quot;;
+public static string LOGGING_DLLEXPORT_MACRO = &quot;BCICORE_API&quot;;
+public static string LOG_FORWARD_MACRO = &quot;UE_LOG&quot;;
+</code></pre>
+<p>To customize these values, set the static strings from the Target file</p>
+<pre><code>THEMODULE.LOG_FORWARD_MACRO = &quot;CUSTOM_LOG&quot;;
+</code></pre>
+<p>Lastly, see issue https://github.com/BirdCatcherGamesOrg/bci-ue-logger-lib/issues/1 to track the progress of creating a branch which provides the module as a standalone plugin.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../.." class="btn btn-neutral float-left" title="BCI Project"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../.." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
