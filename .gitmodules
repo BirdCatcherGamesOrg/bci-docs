@@ -1,3 +1,6 @@
 [submodule "docs/bci-ue-logger-lib"]
 	path = docs/bci-ue-logger-lib
 	url = https://github.com/BirdCatcherGamesOrg/bci-ue-logger-lib
+[submodule "docs/bcivndk-extensions-ue-plugin"]
+	path = docs/bcivndk-extensions-ue-plugin
+	url = https://github.com/BirdCatcherGamesOrg/bcivndk-extensions-ue-plugin

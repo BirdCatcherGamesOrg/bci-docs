@@ -15,3 +15,5 @@ nav:
     - index.md
     - Libraries:
         - bci-ue-logger-lib/docs/index.md
+    - VNDK:
+        - bcivndk-extensions-ue-plugin/Source/BCIVNDKDialogue/docs/index.md
