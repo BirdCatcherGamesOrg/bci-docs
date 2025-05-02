@@ -1,2 +1,6 @@
 ﻿.git/
 docs/
+*.h
+*.cpp
+*.uplugin
+*.cs
